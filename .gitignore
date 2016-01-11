@@ -1,0 +1,6 @@
+env/
+*.egg-info
+.DS_Store
+__pycache__
+
+.eggs/README.txt

@@ -115,6 +115,11 @@ def input(ctx, input):
         print("Current input is", avr.input)
 
 
+# This command a little inconsistent with the input command in that
+# setting the volume requires you pass an option rather than an
+# argument. This is a limitation imposed by click. While with an
+# option with the float type we can pass a negative number in,
+# if we do this with an argument it tries to parse it as an option.
 @cli.command(context_settings=CTX_SETTINGS)
 @click.option('-v', '--vol', type=click.FLOAT, required=False)
 @click.pass_context

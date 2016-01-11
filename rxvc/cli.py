@@ -117,6 +117,42 @@ def volume(ctx, vol):
         click.echo(avr.volume)
 
 
+@cli.command(context_settings=CTX_SETTINGS)
+@click.argument('state', required=False)
+@click.pass_context
+def power(ctx, state):
+    """Power the receiver on or off. If an argument is passed it
+    should be 'on' or 'off', otherwise just print the current
+    power state.
+
+    Note that RX-V receivers have a Network Standby setting that
+    allows you to turn it on over the wire when the receiver is
+    off, but by default this is not enabled. Make sure you turn
+    that on!
+
+    """
+    avr = ctx.obj['avr']
+    if state:
+        state = state.lower()
+        if state in ['on', 'off']:
+            try:
+                avr.on = state == 'on'
+                click.echo("Turned the receiver {}".format(state))
+            except:
+                msg = (
+                    "Something went wrong. Make sure the Network "
+                    "Standby setting of your receiver is on."
+                )
+                click.echo(click.style(msg, fg='red'))
+        else:
+            click.echo(
+                click.style("State must be on or off", fg='red')
+            )
+    else:
+        state = 'on' if avr.on else 'off'
+        click.echo("Power state is {}".format(state))
+
+
 # Volume inc/dev convenience commands.
 
 def _adjust_volume(avr, points, operation):

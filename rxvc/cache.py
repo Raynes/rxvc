@@ -1,10 +1,35 @@
 """Functions for working with our receiver cache."""
+import sys
 import json
 from pathlib import Path
 from os.path import expanduser
 from rxv import RXV
+import rxv
 
 cache_path = Path(expanduser("~/.rxvc_cache"))
+
+
+def find_receiver():
+    """Look for a receiver using rxv's find method. If no receiver
+    is found, print an appropriate error, otherwise return the first
+    (if multiple are found) receiver
+
+    """
+    receiver = None
+    print("Looking for receivers...")
+    found_receivers = rxv.find()
+    if len(found_receivers) > 1:
+        print("Found multiple receivers, choosing the first one.")
+        receiver = found_receivers[0]
+        print("Using {}".format(receiver.friendly_name))
+    elif not found_receivers:
+        print("No reciever found, giving up.")
+        sys.exit(1)
+    else:
+        receiver = found_receivers[0]
+        print("Found receiver:", receiver.friendly_name)
+
+    return receiver
 
 
 def cache_receiver(receiver):

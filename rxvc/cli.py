@@ -1,36 +1,11 @@
 """Commands for controlling a Yamaha RX-V series receiver."""
-import sys
 import click
-import rxv
 # Not spelling this correctly on purpose... needs fixed upstream.
 from rxv.exceptions import ReponseException
 
 import rxvc.cache as cache
 
 CTX_SETTINGS = dict(help_option_names=['-h', '--help'])
-
-
-def find_receiver():
-    """Look for a receiver using rxv's find method. If no receiver
-    is found, print an appropriate error, otherwise return the first
-    (if multiple are found) receiver
-
-    """
-    receiver = None
-    print("Looking for receivers...")
-    found_receivers = rxv.find()
-    if len(found_receivers) > 1:
-        print("Found multiple receivers, choosing the first one.")
-        receiver = found_receivers[0]
-        print("Using {}".format(receiver.friendly_name))
-    elif not found_receivers:
-        print("No reciever found, giving up.")
-        sys.exit(1)
-    else:
-        receiver = found_receivers[0]
-        print("Found receiver:", receiver.friendly_name)
-
-    return receiver
 
 
 @click.group(invoke_without_command=True,
@@ -57,7 +32,7 @@ def cli(ctx, clear):
 
     receiver = cache.cached_receiver()
     if receiver is None:
-        receiver = find_receiver()
+        receiver = cache.find_receiver()
         cache.cache_receiver(receiver)
 
     ctx.obj = {}

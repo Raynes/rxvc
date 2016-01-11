@@ -135,7 +135,7 @@ def volume(ctx, vol):
             click.echo(avr.volume)
         except ReponseException as e:
             if "Volume" in str(e):
-                msg = "Volume must be specified in 0.5 increments."
+                msg = "Volume must be specified in -0.5 increments."
                 err = click.style(msg, fg='red')
                 click.echo(err, err=True)
     else:

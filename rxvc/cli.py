@@ -1,8 +1,10 @@
+"""Commands for controlling a Yamaha RX-V series receiver."""
 import sys
 import click
 import rxv
 
 import rxvc.cache as cache
+
 
 def find_receiver():
     """Look for a receiver using rxv's find method. If no receiver

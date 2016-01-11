@@ -2,6 +2,8 @@
 import sys
 import click
 import rxv
+# Not spelling this correctly on purpose... needs fixed upstream.
+from rxv.exceptions import ReponseException
 
 import rxvc.cache as cache
 
@@ -111,3 +113,25 @@ def input(ctx, input):
                    "get a list of them."))
     else:
         print("Current input is", avr.input)
+
+
+@cli.command(context_settings=CTX_SETTINGS)
+@click.option('-v', '--vol', type=click.FLOAT, required=False)
+@click.pass_context
+def volume(ctx, vol):
+    """Show the current receiver volume level, or set it with the
+    -v/--vol option.
+
+    """
+    avr = ctx.obj['avr']
+    if vol:
+        try:
+            avr.volume = vol
+            click.echo(avr.volume)
+        except ReponseException as e:
+            if "Volume" in str(e):
+                msg = "Volume must be specified in 0.5 increments."
+                err = click.style(msg, fg='red')
+                click.echo(err, err=True)
+    else:
+        click.echo(avr.volume)

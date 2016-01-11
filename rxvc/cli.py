@@ -1,8 +1,8 @@
 """Commands for controlling a Yamaha RX-V series receiver."""
+import operator
 import click
 # Not spelling this correctly on purpose... needs fixed upstream.
 from rxv.exceptions import ReponseException
-
 import rxvc.cache as cache
 
 CTX_SETTINGS = dict(help_option_names=['-h', '--help'])
@@ -115,3 +115,64 @@ def volume(ctx, vol):
                 click.echo(err, err=True)
     else:
         click.echo(avr.volume)
+
+
+# Volume inc/dev convenience commands.
+
+def _adjust_volume(avr, points, operation):
+    """Adjust volume up or down by multiplying points by 0.5 and
+    either subtracting from (decrease) or adding to (increase) the
+    current volume level, printing an out of range (best guess) if
+    the receiver complains about the new level.
+
+    The last argument, operation, should be either operator.add or
+    operator.sub.
+
+    """
+    current_vol = avr.volume
+    new_vol = operation(current_vol, (points * 0.5))
+
+    try:
+        avr.volume = new_vol
+        click.echo(new_vol)
+    except ReponseException:
+        click.echo(
+            click.style("New volume must be out of range.",
+                        fg='red')
+        )
+
+
+@cli.command(context_settings=CTX_SETTINGS)
+@click.argument('points',
+                type=click.INT,
+                default=2,
+                required=False)
+@click.pass_context
+def up(ctx, points):
+    """Turn up the receiver volume in 0.5 increments. If no
+    argument is passed, the argument defaults to 2 which is
+    multiplied by 0.5 (the receiver's accepted increments)
+    and added to current volume. If the argument is passed,
+    you can control the number of increments.
+
+    """
+    avr = ctx.obj['avr']
+    _adjust_volume(avr, points, operator.add)
+
+
+@cli.command(context_settings=CTX_SETTINGS)
+@click.argument('points',
+                type=click.INT,
+                default=2,
+                required=False)
+@click.pass_context
+def down(ctx, points):
+    """Turn down the receiver volume in 0.5 increments. If no
+    argument is passed, the argument defaults to 2 which is
+    multiplied by 0.5 (the receiver's accepted increments)
+    and subtracted to current volume. If the argument is passed,
+    you can control the number of increments.
+
+    """
+    avr = ctx.obj['avr']
+    _adjust_volume(avr, points, operator.sub)

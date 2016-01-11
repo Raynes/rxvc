@@ -5,6 +5,8 @@ import rxv
 
 import rxvc.cache as cache
 
+CTX_SETTINGS = dict(help_option_names=['-h', '--help'])
+
 
 def find_receiver():
     """Look for a receiver using rxv's find method. If no receiver
@@ -29,7 +31,9 @@ def find_receiver():
     return receiver
 
 
-@click.group(invoke_without_command=True)
+@click.group(invoke_without_command=True,
+             no_args_is_help=True,
+             context_settings=CTX_SETTINGS)
 @click.option('--clear',
               is_flag=True,
               default=False,
@@ -58,7 +62,7 @@ def cli(ctx, clear):
     ctx.obj['avr'] = receiver
 
 
-@cli.command()
+@cli.command(context_settings=CTX_SETTINGS)
 @click.pass_context
 def status(ctx):
     """Print overall status of the receiver."""
@@ -73,7 +77,7 @@ def status(ctx):
                muted=status.mute))
 
 
-@cli.command('inputs')
+@cli.command(context_settings=CTX_SETTINGS)
 @click.pass_context
 def inputs(ctx):
     """List valid input names for this receiver.
@@ -87,7 +91,7 @@ def inputs(ctx):
         print('* ', input)
 
 
-@cli.command()
+@cli.command(context_settings=CTX_SETTINGS)
 @click.argument("input", nargs=-1)
 @click.pass_context
 def input(ctx, input):

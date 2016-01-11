@@ -11,7 +11,7 @@ def cache_receiver(receiver):
     """Touch our cache file to make sure it at least exists and
     dump what we know (control url, name, model) to json into
     the file as a cache for the next run of this project.
-    
+
     """
     cache_path.touch(exist_ok=True)
     cache_path.write_text(json.dumps({
@@ -24,7 +24,7 @@ def cached_receiver():
     """Return an RXV object for our cached receiver if there
     is one otherwise return None and the cache will be populated
     on the next run of rxvc.
-    
+
     """
     if cache_path.exists():
         parsed_cache = json.loads(cache_path.read_text())

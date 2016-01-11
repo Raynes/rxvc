@@ -10,7 +10,7 @@ def find_receiver():
     """Look for a receiver using rxv's find method. If no receiver
     is found, print an appropriate error, otherwise return the first
     (if multiple are found) receiver
-    
+
     """
     receiver = None
     print("Looking for receivers...")
@@ -25,7 +25,7 @@ def find_receiver():
     else:
         receiver = found_receivers[0]
         print("Found receiver:", receiver.friendly_name)
-    
+
     return receiver
 
 
@@ -77,10 +77,10 @@ def status(ctx):
 @click.pass_context
 def inputs(ctx):
     """List valid input names for this receiver.
-    
+
     These are names that can also be passed to the input command
     when using it to set an input.
-    
+
     """
     print("Valid input names for this receiver are:")
     for input in ctx.obj['avr'].inputs():
@@ -95,7 +95,7 @@ def input(ctx, input):
     argument that is a valid input for the receiver. Note that
     if it has spaces in it, you should wrap the whole argument
     in quotes space excaping and stuff.
-    
+
     """
     avr = ctx.obj['avr']
     if input:

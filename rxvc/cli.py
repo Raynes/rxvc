@@ -3,7 +3,7 @@ import operator
 import click
 # Not spelling this correctly on purpose... needs fixed upstream.
 from rxv.exceptions import ReponseException
-import rxvc.cache as cache
+from rxvc import RXVC
 
 CTX_SETTINGS = dict(help_option_names=['-h', '--help'])
 
@@ -26,14 +26,11 @@ def cli(ctx, clear):
     Have fun!
 
     """
-    if clear:
-        print("Clearing receiver cache as requested...")
-        cache.clear()
+    receiver = RXVC(retrying=False)
 
-    receiver = cache.cached_receiver()
-    if receiver is None:
-        receiver = cache.find_receiver()
-        cache.cache_receiver(receiver)
+    if clear:
+        click.echo("Clearing the receiver cache.")
+        receiver.clear()
 
     ctx.obj = {}
     ctx.obj['avr'] = receiver
@@ -43,7 +40,7 @@ def cli(ctx, clear):
 @click.pass_context
 def status(ctx):
     """Print overall status of the receiver."""
-    status = ctx.obj['avr'].basic_status
+    status = ctx.obj['avr'].rxv.basic_status
     print(("\nPower: {on}\n"
            "Input: {input}\n"
            "Volume: {volume}\n"
@@ -64,7 +61,7 @@ def inputs(ctx):
 
     """
     print("Valid input names for this receiver are:")
-    for input in ctx.obj['avr'].inputs():
+    for input in ctx.obj['avr'].rxv.inputs():
         print('* ', input)
 
 
@@ -78,7 +75,7 @@ def input(ctx, input):
     in quotes space excaping and stuff.
 
     """
-    avr = ctx.obj['avr']
+    avr = ctx.obj['avr'].rxv
     if input:
         if input[0] in avr.inputs():
             print("Setting receiver input to {}".format(input[0]))
@@ -103,7 +100,7 @@ def volume(ctx, vol):
     -v/--vol option.
 
     """
-    avr = ctx.obj['avr']
+    avr = ctx.obj['avr'].rxv
     if vol:
         try:
             avr.volume = vol
@@ -131,7 +128,7 @@ def power(ctx, state):
     that on!
 
     """
-    avr = ctx.obj['avr']
+    avr = ctx.obj['avr'].rxv
     if state:
         state = state.lower()
         if state in ['on', 'off']:
@@ -192,7 +189,7 @@ def up(ctx, points):
     you can control the number of increments.
 
     """
-    avr = ctx.obj['avr']
+    avr = ctx.obj['avr'].rxv
     _adjust_volume(avr, points, operator.add)
 
 
@@ -210,5 +207,5 @@ def down(ctx, points):
     you can control the number of increments.
 
     """
-    avr = ctx.obj['avr']
+    avr = ctx.obj['avr'].rxv
     _adjust_volume(avr, points, operator.sub)

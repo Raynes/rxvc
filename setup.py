@@ -13,7 +13,10 @@ setup(
     url='https://github.com/raynes/rxvc',
     license='MIT',
     install_requires=[
-        'rxv==0.1.7',
+        'hug==1.9.9',
+        'uwsgi==2.0.12',
+        'rxv==0.1.9',
+        'retry==0.9.1',
         'click==6.2'
     ],
     entry_points='''
